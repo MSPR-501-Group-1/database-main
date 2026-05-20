@@ -41,6 +41,30 @@ CREATE TYPE pipeline_status_enum AS ENUM (
     'PENDING', 'FAILED', 'TRANSFORMED', 'REJECTED', 'LOADED'
 );
 
+CREATE TYPE gender_enum AS ENUM (
+   'Male', 'Female'
+);
+
+CREATE TYPE fitness_level_enum AS ENUM (
+   'beginner', 'intermediate', 'advanced'
+);
+
+CREATE TYPE injury_type_enum AS ENUM (
+   'none', 'back', 'knee', 'ankle', 'wrist', 'shoulder'
+);
+
+CREATE TYPE injury_severity_enum AS ENUM (
+   'none', 'moderate', 'severe', 'mild'
+);
+
+CREATE TYPE medical_condition_enum AS ENUM (
+   'diabetes', 'none', 'asthma', 'cardiac', 'hypertension'
+);
+
+CREATE TYPE health_goal_enum AS ENUM (
+   'fat_loss', 'muscle_gain', 'general_health', 'endurance'
+);
+
 -- TABLES ------------------------------------------------
 
 CREATE TABLE health_goal(
@@ -53,7 +77,6 @@ CREATE TABLE health_goal(
 CREATE TABLE ingredient(
    ingredient_id VARCHAR(255) DEFAULT gen_random_uuid(),
    name VARCHAR(255),
-   usda_name VARCHAR(255),
    category ingredient_category_enum,
    nutriscore nutriscore_enum,
    -- Valeurs nutritionnelles pour 100g
@@ -167,18 +190,27 @@ CREATE TABLE user_(
 );
 
 CREATE TABLE user_metrics(
-   metric_id VARCHAR(255) DEFAULT gen_random_uuid(),
+   metric_id VARCHAR(50),
+   recorded_at DATE,
+   age INT,
+   gender gender_enum DEFAULT 'Male',
+   height_cm DECIMAL(15,2),
+   weight_kg DECIMAL(15,2),
+   bmi DECIMAL(15,2),
+   body_fat_percentage DECIMAL(15,2),
+   resting_bpm INT,
+   health_goal health_goal_enum DEFAULT 'general_health',
+   target_timeline_weeks INT,
+   fitness_level fitness_level_enum DEFAULT 'beginner',
+   fatigue_score INT,
+   has_gym_access BOOLEAN,
+   workout_variety_preference INT,
+   injury_type injury_type_enum DEFAULT 'none',
+   injury_severity injury_severity_enum DEFAULT 'none',
+   medical_condition medical_condition_enum DEFAULT 'none',
    user_id VARCHAR(255) NOT NULL,
-   recorded_date TIMESTAMP,
-   weight_kg DECIMAL(10,2),
-   body_fat_pourcentage DECIMAL(6,2),
-   steps INT,
-   calories_burned DECIMAL(10,2),
-   heart_rate_avg INT,
-   heart_rate_max INT,
-   sleep_hours INT,
    PRIMARY KEY(metric_id),
-   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
 );
 
 CREATE TABLE login_history(
@@ -251,8 +283,3 @@ CREATE TABLE workout_session_exercise(
    FOREIGN KEY(session_id) REFERENCES workout_session(session_id),
    FOREIGN KEY(exercise_id) REFERENCES exercise(exercise_id)
 );
-
--- INDEXES ------------------------------------------------
-
-CREATE INDEX IF NOT EXISTS idx_login_history_last_login_user_id
-   ON login_history (last_login DESC, user_id);

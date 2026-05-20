@@ -43,27 +43,27 @@ CREATE TYPE pipeline_status_enum AS ENUM (
 
 CREATE TYPE gender_enum AS ENUM (
    'Male', 'Female'
-)
+);
 
 CREATE TYPE fitness_level_enum AS ENUM (
    'beginner', 'intermediate', 'advanced'
-)
+);
 
 CREATE TYPE injury_type_enum AS ENUM (
    'none', 'back', 'knee', 'ankle', 'wrist', 'shoulder'
-)
+);
 
 CREATE TYPE injury_severity_enum AS ENUM (
    'none', 'moderate', 'severe', 'mild'
-)
+);
 
 CREATE TYPE medical_condition_enum AS ENUM (
    'diabetes', 'none', 'asthma', 'cardiac', 'hypertension'
-)
+);
 
 CREATE TYPE health_goal_enum AS ENUM (
    'fat_loss', 'muscle_gain', 'general_health', 'endurance'
-)
+);
 
 -- TABLES ------------------------------------------------
 
@@ -192,19 +192,19 @@ CREATE TABLE user_(
 CREATE TABLE user_metrics(
    metric_id VARCHAR(50),
    recorded_at DATE,
-   age BYTE,
+   age INT,
    gender gender_enum DEFAULT 'Male',
    height_cm DECIMAL(15,2),
    weight_kg DECIMAL(15,2),
    bmi DECIMAL(15,2),
    body_fat_percentage DECIMAL(15,2),
-   resting_bpm BYTE,
+   resting_bpm INT,
    health_goal health_goal_enum DEFAULT 'general_health',
-   target_timeline_weeks BYTE,
+   target_timeline_weeks INT,
    fitness_level fitness_level_enum DEFAULT 'beginner',
-   fatigue_score BYTE,
-   has_gym_access LOGICAL,
-   workout_variety_preference BYTE,
+   fatigue_score INT,
+   has_gym_access BOOLEAN,
+   workout_variety_preference INT,
    injury_type injury_type_enum DEFAULT 'none',
    injury_severity injury_severity_enum DEFAULT 'none',
    medical_condition medical_condition_enum DEFAULT 'none',
