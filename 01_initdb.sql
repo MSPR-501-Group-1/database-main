@@ -68,55 +68,48 @@ CREATE TYPE health_goal_enum AS ENUM (
 -- TABLES ------------------------------------------------
 
 CREATE TABLE health_goal(
-   goal_id VARCHAR(255) DEFAULT gen_random_uuid(),
+   goal_id VARCHAR(255),
    label VARCHAR(50),
    description TEXT,
    PRIMARY KEY(goal_id)
 );
 
 CREATE TABLE ingredient(
-   ingredient_id VARCHAR(255) DEFAULT gen_random_uuid(),
+   ingredient_id VARCHAR(255),
    name VARCHAR(255),
-   category ingredient_category_enum,
-   nutriscore nutriscore_enum,
-   -- Valeurs nutritionnelles pour 100g
-   calories_g DECIMAL(6,2),
-   fat_g DECIMAL(5,2),
+   calories_g DECIMAL(4,1),
+   fat_g DECIMAL(4,1),
+   nutriscore ENUM,
+   category ENUM,
    fiber_g DECIMAL(5,2),
    sugar_g DECIMAL(5,2),
    sodium_mg DECIMAL(5,2),
    cholesterol_mg DECIMAL(5,2),
    protein_g DECIMAL(5,2),
    carbs_g DECIMAL(5,2),
+   usda_name VARCHAR(60),
+   price_per_kg DECIMAL(10,5),
    PRIMARY KEY(ingredient_id)
 );
 
-CREATE TABLE recipe(
-   recipe_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   title VARCHAR(255),
-   instructions TEXT,
-   PRIMARY KEY(recipe_id)
+CREATE TABLE role(
+   role_id VARCHAR(255),
+   role_type ENUM,
+   is_system LOGICAL,
+   PRIMARY KEY(role_id)
 );
 
-CREATE TABLE exercise(
-   exercise_id VARCHAR(255) DEFAULT gen_random_uuid(),
+CREATE TABLE organization(
+   organization_id VARCHAR(255),
    name VARCHAR(255),
-   description TEXT,
-   body_part_target body_part_enum,
-   video_url TEXT,
-   difficulty_level exercise_difficulty_enum,
-   equipment_required TEXT,
-   category exercise_category_enum,
-   PRIMARY KEY(exercise_id)
+   PRIMARY KEY(organization_id)
 );
-
 
 CREATE TABLE etl_execution(
-   execution_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   name VARCHAR(255),
-   started_at TIMESTAMP,
-   ended_at TIMESTAMP,
-   status pipeline_status_enum,
+   execution_id VARCHAR(50),
+   started_at DATETIME,
+   ended_at DATETIME,
+   status LOGICAL,
    records_extracted INT,
    records_loaded INT,
    records_rejected INT,
@@ -125,120 +118,225 @@ CREATE TABLE etl_execution(
 );
 
 CREATE TABLE data_quality_check_(
-   check_id VARCHAR(255) DEFAULT gen_random_uuid(),
+   check_id VARCHAR(50),
    target_table VARCHAR(50),
    check_type VARCHAR(50),
    check_rule VARCHAR(50),
    records_checked INT,
    records_failed INT,
-   checked_at TIMESTAMP,
-   status BOOLEAN,
-   execution_id VARCHAR(255) NOT NULL,
+   checked_at DATETIME,
+   status LOGICAL,
+   execution_id VARCHAR(50) NOT NULL,
    PRIMARY KEY(check_id),
-   FOREIGN KEY(execution_id) REFERENCES etl_execution(execution_id) ON DELETE CASCADE
+   FOREIGN KEY(execution_id) REFERENCES etl_execution(execution_id)
 );
 
 CREATE TABLE data_anomaly(
-   anomaly_id VARCHAR(255) DEFAULT gen_random_uuid(),
+   anomaly_id VARCHAR(50),
    source_table VARCHAR(50),
    anomaly_table VARCHAR(50),
    field_name VARCHAR(50),
    record_identifier VARCHAR(50),
-   original_value TEXT,
-   detected_at TIMESTAMP,
+   original_value VARCHAR(50),
+   detected_at DATETIME,
    severity VARCHAR(50),
-   is_resolved BOOLEAN,
+   is_resolved LOGICAL,
    resolution_action VARCHAR(50),
    check_id VARCHAR(50),
    execution_id VARCHAR(50) NOT NULL,
    PRIMARY KEY(anomaly_id),
-   FOREIGN KEY(check_id) REFERENCES data_quality_check_(check_id) ON DELETE CASCADE,
-   FOREIGN KEY(execution_id) REFERENCES etl_execution(execution_id) ON DELETE CASCADE
+   FOREIGN KEY(check_id) REFERENCES data_quality_check_(check_id),
+   FOREIGN KEY(execution_id) REFERENCES etl_execution(execution_id)
 );
 
-CREATE TABLE role(
-   role_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   role_type role_type_enum NOT NULL UNIQUE,
-   is_system BOOLEAN,
-   PRIMARY KEY(role_id)
+CREATE TABLE ai_recommendation(
+   recommendation_id VARCHAR(50),
+   mongodb_document_id VARCHAR(255) NOT NULL,
+   mongodb_collection VARCHAR(255) NOT NULL,
+   recommendation_type ENUM,
+   confidence_score DECIMAL(3,2),
+   status ENUM,
+   created_at VARCHAR(50),
+   PRIMARY KEY(recommendation_id)
 );
 
-CREATE TABLE organization(
-   organization_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   name VARCHAR(255),
-   PRIMARY KEY(organization_id)
+CREATE TABLE ai_model_registry(
+   model_id VARCHAR(50),
+   provider ENUM,
+   model_name VARCHAR(255),
+   model_version VARCHAR(255),
+   supported_request_types ENUM,
+   max_tokens_input DECIMAL(15,2),
+   max_tokens_output DECIMAL(15,2),
+   is_active LOGICAL,
+   priority_rank INT,
+   cost_per_1k_tokens DECIMAL(15,2),
+   cost_per_request DECIMAL(15,2),
+   created_at DATETIME,
+   PRIMARY KEY(model_id)
+);
+
+CREATE TABLE model_performance(
+   performance_id VARCHAR(50),
+   evaluation_period_start DATETIME,
+   evaluation_period_end DATETIME,
+   precision_ DECIMAL(5,2),
+   model_id VARCHAR(50) NOT NULL,
+   PRIMARY KEY(performance_id),
+   FOREIGN KEY(model_id) REFERENCES ai_model_registry(model_id)
 );
 
 CREATE TABLE user_(
-   user_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   email VARCHAR(320) UNIQUE NOT NULL,
-   password_hash VARCHAR(255) NOT NULL,
+   user_id VARCHAR(255),
+   email VARCHAR(255),
+   password_hash VARCHAR(255),
    first_name VARCHAR(255),
    last_name VARCHAR(255),
    birth_date DATE,
    gender_code INT,
+   diet_type ENUM,
+   is_active LOGICAL,
+   allergies ENUM,
    height_cm DECIMAL(5,2),
    current_weight_kg DECIMAL(5,2),
-   allergies allergies_enum DEFAULT 'NONE',
-   diet_type diet_type_enum DEFAULT 'NONE',
-   is_active BOOLEAN DEFAULT true,
+   ai_consent LOGICAL,
+   created_at DATE,
+   updated_at DATETIME,
    role_id VARCHAR(255) NOT NULL,
-   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
    PRIMARY KEY(user_id),
+   UNIQUE(email),
    FOREIGN KEY(role_id) REFERENCES role(role_id)
+);
+
+CREATE TABLE recipe(
+   recipe_id VARCHAR(255),
+   title VARCHAR(255),
+   instructions TEXT,
+   ai_generated LOGICAL,
+   generation_prompt TEXT,
+   created_at DATETIME,
+   recommendation_id VARCHAR(50) NOT NULL,
+   PRIMARY KEY(recipe_id),
+   FOREIGN KEY(recommendation_id) REFERENCES ai_recommendation(recommendation_id)
+);
+
+CREATE TABLE meal(
+   meal_id VARCHAR(255),
+   consumed_at DATETIME,
+   quantity_grams INT,
+   calories_consumed INT,
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(meal_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
+);
+
+CREATE TABLE workout_session(
+   session_id VARCHAR(255),
+   start_at DATETIME,
+   end_at DATETIME,
+   calories_burned SMALLINT,
+   notes TEXT,
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(session_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
+);
+
+CREATE TABLE exercise(
+   exercise_id VARCHAR(255),
+   name VARCHAR(255),
+   description TEXT,
+   body_part_target ENUM,
+   video_url TEXT,
+   difficulty_level ENUM,
+   equipment_required TEXT,
+   category ENUM,
+   ai_recommended LOGICAL,
+   adaptability_score DECIMAL(5,2),
+   created_at DATETIME,
+   recommendation_id VARCHAR(50) NOT NULL,
+   PRIMARY KEY(exercise_id),
+   FOREIGN KEY(recommendation_id) REFERENCES ai_recommendation(recommendation_id)
+);
+
+CREATE TABLE login_history(
+   last_login_id VARCHAR(255),
+   last_login DATETIME,
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(last_login_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
+);
+
+CREATE TABLE user_preference(
+   preference_id VARCHAR(255),
+   excluded_ingredients Array,
+   preferred_cuisines Array,
+   budget_max_per_meal DECIMAL(6,2),
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(preference_id),
+   UNIQUE(user_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
+);
+
+CREATE TABLE ai_request(
+   request_id VARCHAR(50),
+   idempotency_key VARCHAR(255),
+   request_type ENUM,
+   input_payload TEXT,
+   user_context_snapshot TEXT,
+   error_message VARCHAR(50),
+   retry_count VARCHAR(50),
+   api_cost_usd VARCHAR(50),
+   processing_time_ms VARCHAR(50),
+   status ENUM,
+   created_at DATETIME,
+   started_at DATETIME,
+   completed_at DATETIME,
+   model_id VARCHAR(50) NOT NULL,
+   recommendation_id VARCHAR(50) NOT NULL,
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(request_id),
+   UNIQUE(recommendation_id),
+   UNIQUE(idempotency_key),
+   FOREIGN KEY(model_id) REFERENCES ai_model_registry(model_id),
+   FOREIGN KEY(recommendation_id) REFERENCES ai_recommendation(recommendation_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
+);
+
+CREATE TABLE api_quota(
+   quota_id VARCHAR(50),
+   period_type ENUM,
+   period_start DATETIME,
+   period_end DATETIME,
+   request_limit INT,
+   requests_consumed INT,
+   created_at DATETIME,
+   user_id VARCHAR(255) NOT NULL,
+   PRIMARY KEY(quota_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id)
 );
 
 CREATE TABLE user_metrics(
    metric_id VARCHAR(50),
    recorded_at DATE,
-   age INT,
-   gender gender_enum DEFAULT 'Male',
+   birth_date DATE,
+   gender ENUM,
    height_cm DECIMAL(15,2),
    weight_kg DECIMAL(15,2),
    bmi DECIMAL(15,2),
    body_fat_percentage DECIMAL(15,2),
-   resting_bpm INT,
-   health_goal health_goal_enum DEFAULT 'general_health',
-   target_timeline_weeks INT,
-   fitness_level fitness_level_enum DEFAULT 'beginner',
-   fatigue_score INT,
-   has_gym_access BOOLEAN,
-   workout_variety_preference INT,
-   injury_type injury_type_enum DEFAULT 'none',
-   injury_severity injury_severity_enum DEFAULT 'none',
-   medical_condition medical_condition_enum DEFAULT 'none',
+   resting_bpm BYTE,
+   health_goal ENUM,
+   target_timeline_weeks BYTE,
+   fitness_level ENUM,
+   fatigue_score BYTE,
+   has_gym_access LOGICAL,
+   workout_variety_preference BYTE,
+   injury_type ENUM,
+   injury_severity ENUM,
+   medical_condition ENUM,
    user_id VARCHAR(255) NOT NULL,
    PRIMARY KEY(metric_id),
    FOREIGN KEY(user_id) REFERENCES user_(user_id)
-);
-
-CREATE TABLE login_history(
-   last_login_id VARCHAR(255) PRIMARY KEY DEFAULT gen_random_uuid()::VARCHAR,
-   user_id VARCHAR(255) NOT NULL,
-   last_login TIMESTAMP NOT NULL,
-   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE meal(
-   meal_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   consumed_at TIMESTAMP,
-   quantity_grams INT,
-   calories_consumed INT,
-   user_id VARCHAR(255) NOT NULL,
-   PRIMARY KEY(meal_id),
-   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
-);
-
-CREATE TABLE workout_session(
-   session_id VARCHAR(255) DEFAULT gen_random_uuid(),
-   start_at TIMESTAMP,
-   end_at TIMESTAMP,
-   calories_burned SMALLINT,
-   notes TEXT,
-   user_id VARCHAR(255) NOT NULL,
-   PRIMARY KEY(session_id),
-   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
 );
 
 CREATE TABLE user_health_goal(
@@ -282,4 +380,12 @@ CREATE TABLE workout_session_exercise(
    PRIMARY KEY(session_id, exercise_id),
    FOREIGN KEY(session_id) REFERENCES workout_session(session_id),
    FOREIGN KEY(exercise_id) REFERENCES exercise(exercise_id)
+);
+
+CREATE TABLE user_ia_recommendation(
+   user_id VARCHAR(255),
+   recommendation_id VARCHAR(50),
+   PRIMARY KEY(user_id, recommendation_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id),
+   FOREIGN KEY(recommendation_id) REFERENCES ai_recommendation(recommendation_id)
 );

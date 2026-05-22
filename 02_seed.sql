@@ -15,7 +15,11 @@ INSERT INTO health_goal (goal_id, label, description) VALUES
   ('GOAL_005', 'General Wellness', 'Maintain overall health and well-being');
 
 -- ============================================================
--- ingredient  (sans usda_name, conforme au DDL v2)
+-- ingredient
+-- name       = nom court (utilisé par les routes IA et le matching)
+-- usda_name  = nom complet USDA (source officielle, utilisé pour l'import ETL)
+-- price_per_kg = estimation marché français 2025 (€/kg)
+--   → conversion backend : coût = quantity_g * price_per_kg / 1000
 -- ============================================================
 INSERT INTO ingredient (
   ingredient_id,
@@ -29,18 +33,20 @@ INSERT INTO ingredient (
   sodium_mg,
   cholesterol_mg,
   protein_g,
-  carbs_g
+  carbs_g,
+  usda_name,
+  price_per_kg
 ) VALUES
-  ('ING_001', 'Chicken',      'MEAT',      'A', 1.65, 0.36,  0.0,  0.0, 74.0, 85.0, 31.0,  0.0),
-  ('ING_002', 'Broccoli',     'VEGETABLE', 'A', 0.34, 0.04,  2.6,  0.7, 33.0,  0.0,  2.8,  7.0),
-  ('ING_003', 'Brown rice',   'GRAIN',     'B', 1.11, 0.09,  1.8,  0.4,  5.0,  0.0,  2.6, 23.0),
-  ('ING_004', 'Whole milk',   'DAIRY',     'C', 0.61, 0.33,  0.0,  4.8, 44.0, 10.0,  3.2,  4.8),
-  ('ING_005', 'Banana',       'FRUIT',     'A', 0.89, 0.03,  2.6, 12.2,  1.0,  0.0,  1.1, 23.0),
-  ('ING_006', 'Salmon',       'MEAT',      'A', 2.08, 1.30,  0.0,  0.0, 59.0, 63.0, 20.0,  0.0),
-  ('ING_007', 'Olive oil',    'OTHER',     'D', 8.84,10.00,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0),
-  ('ING_008', 'Oats',         'GRAIN',     'A', 3.89, 0.67, 10.6,  0.0,  2.0,  0.0, 16.9, 66.0),
-  ('ING_009', 'Greek yogurt', 'DAIRY',     'A', 0.59, 0.04,  0.0,  3.2, 36.0,  5.0, 10.0,  3.6),
-  ('ING_010', 'Spinach',      'VEGETABLE', 'A', 0.23, 0.04,  2.2,  0.4, 79.0,  0.0,  2.9,  3.6);
+  ('ING_001', 'Chicken',      'MEAT',      'A', 1.65,  0.36,  0.0,  0.0, 74.0, 85.0, 31.0,  0.0, 'Chicken, broilers or fryers, breast, meat only, cooked, roasted',    9.50),
+  ('ING_002', 'Broccoli',     'VEGETABLE', 'A', 0.34,  0.04,  2.6,  0.7, 33.0,  0.0,  2.8,  7.0, 'Broccoli, cooked, boiled, drained, without salt',                    2.80),
+  ('ING_003', 'Brown rice',   'GRAIN',     'B', 1.11,  0.09,  1.8,  0.4,  5.0,  0.0,  2.6, 23.0, 'Rice, brown, long-grain, cooked',                                    2.50),
+  ('ING_004', 'Whole milk',   'DAIRY',     'C', 0.61,  0.33,  0.0,  4.8, 44.0, 10.0,  3.2,  4.8, 'Milk, whole, 3.25% milkfat, with added vitamin D',                   1.20),
+  ('ING_005', 'Banana',       'FRUIT',     'A', 0.89,  0.03,  2.6, 12.2,  1.0,  0.0,  1.1, 23.0, 'Bananas, raw',                                                        1.80),
+  ('ING_006', 'Salmon',       'MEAT',      'A', 2.08,  1.30,  0.0,  0.0, 59.0, 63.0, 20.0,  0.0, 'Fish, salmon, Atlantic, farmed, cooked, dry heat',                   18.00),
+  ('ING_007', 'Olive oil',    'OTHER',     'D', 8.84, 10.00,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, 'Oil, olive, salad or cooking',                                        8.50),
+  ('ING_008', 'Oats',         'GRAIN',     'A', 3.89,  0.67, 10.6,  0.0,  2.0,  0.0, 16.9, 66.0, 'Oats',                                                                2.00),
+  ('ING_009', 'Greek yogurt', 'DAIRY',     'A', 0.59,  0.04,  0.0,  3.2, 36.0,  5.0, 10.0,  3.6, 'Yogurt, Greek, plain, whole milk',                                    4.50),
+  ('ING_010', 'Spinach',      'VEGETABLE', 'A', 0.23,  0.04,  2.2,  0.4, 79.0,  0.0,  2.9,  3.6, 'Spinach, raw',                                                        3.20);
 
 -- ============================================================
 -- recipe
@@ -164,84 +170,84 @@ INSERT INTO user_ (
 
 -- ============================================================
 -- user_metrics  (nouvelle structure DDL v2)
--- metric_id, recorded_at, age, gender, height_cm, weight_kg, bmi,
+-- metric_id, recorded_at, birth_date, gender, height_cm, weight_kg, bmi,
 -- body_fat_percentage, resting_bpm, health_goal, target_timeline_weeks,
 -- fitness_level, fatigue_score, has_gym_access, workout_variety_preference,
 -- injury_type, injury_severity, medical_condition, user_id
 -- ============================================================
 INSERT INTO user_metrics (
-  metric_id, recorded_at, age, gender, height_cm, weight_kg, bmi,
+  metric_id, recorded_at, birth_date, gender, height_cm, weight_kg, bmi,
   body_fat_percentage, resting_bpm, health_goal, target_timeline_weeks,
   fitness_level, fatigue_score, has_gym_access, workout_variety_preference,
   injury_type, injury_severity, medical_condition, user_id
 ) VALUES
-  -- USR_001 Alice Martin — muscle_gain, intermediate
-  ('MET_001', '2025-01-01', 34, 'Female', 181.00, 78.50, 23.94,  18.5, 68, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
-  ('MET_002', '2025-01-02', 34, 'Female', 181.00, 78.30, 23.88,  18.4, 70, 'muscle_gain',    12, 'intermediate', 2, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
-  ('MET_003', '2025-01-03', 34, 'Female', 181.00, 78.10, 23.82,  18.3, 67, 'muscle_gain',    12, 'intermediate', 4, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
+  -- USR_001 Alice Martin — muscle_gain, intermediate (née 1990-04-15)
+  ('MET_001', '2025-01-01', '1990-04-15', 'Female', 181.00, 78.50, 23.94,  18.5, 68, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
+  ('MET_002', '2025-01-02', '1990-04-15', 'Female', 181.00, 78.30, 23.88,  18.4, 70, 'muscle_gain',    12, 'intermediate', 2, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
+  ('MET_003', '2025-01-03', '1990-04-15', 'Female', 181.00, 78.10, 23.82,  18.3, 67, 'muscle_gain',    12, 'intermediate', 4, TRUE,  4, 'none',     'none',     'none',        'USR_001'),
 
-  -- USR_002 Bob Dupont — fat_loss, beginner
-  ('MET_004', '2025-01-01', 39, 'Male',   165.00, 62.00, 22.77,  22.1, 72, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none',     'none',     'none',        'USR_002'),
-  ('MET_005', '2025-01-02', 39, 'Male',   165.00, 61.80, 22.70,  22.0, 71, 'fat_loss',       16, 'beginner',     2, FALSE, 2, 'none',     'none',     'none',        'USR_002'),
+  -- USR_002 Bob Dupont — fat_loss, beginner (né 1985-08-22)
+  ('MET_004', '2025-01-01', '1985-08-22', 'Male',   165.00, 62.00, 22.77,  22.1, 72, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none',     'none',     'none',        'USR_002'),
+  ('MET_005', '2025-01-02', '1985-08-22', 'Male',   165.00, 61.80, 22.70,  22.0, 71, 'fat_loss',       16, 'beginner',     2, FALSE, 2, 'none',     'none',     'none',        'USR_002'),
 
-  -- USR_003 Claire Leroy — fat_loss, beginner, knee injury
-  ('MET_006', '2025-01-01', 29, 'Female', 175.00, 95.20, 31.08,  28.0, 78, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee',     'mild',     'none',        'USR_003'),
+  -- USR_003 Claire Leroy — fat_loss, beginner, knee injury (née 1995-12-05)
+  ('MET_006', '2025-01-01', '1995-12-05', 'Female', 175.00, 95.20, 31.08,  28.0, 78, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee',     'mild',     'none',        'USR_003'),
 
-  -- USR_004 David Petit — endurance, advanced
-  ('MET_007', '2025-01-01', 32, 'Male',   170.00, 55.00, 19.03,  15.0, 60, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none',     'none',     'none',        'USR_004'),
+  -- USR_004 David Petit — endurance, advanced (né 1992-06-30)
+  ('MET_007', '2025-01-01', '1992-06-30', 'Male',   170.00, 55.00, 19.03,  15.0, 60, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none',     'none',     'none',        'USR_004'),
 
-  -- USR_005 Emma Blanc — general_health, intermediate
-  ('MET_008', '2025-01-01', 26, 'Female', 168.00, 71.00, 25.15,  24.0, 73, 'general_health', 12, 'intermediate', 3, TRUE,  3, 'none',     'none',     'none',        'USR_005'),
+  -- USR_005 Emma Blanc — general_health, intermediate (née 1998-02-14)
+  ('MET_008', '2025-01-01', '1998-02-14', 'Female', 168.00, 71.00, 25.15,  24.0, 73, 'general_health', 12, 'intermediate', 3, TRUE,  3, 'none',     'none',     'none',        'USR_005'),
 
-  -- USR_006 Francois Noir — general_health, beginner, back injury
-  ('MET_009', '2025-01-01', 36, 'Male',   182.00, 85.00, 25.66,  20.5, 74, 'general_health', 20, 'beginner',     4, FALSE, 2, 'back',     'moderate', 'none',        'USR_006'),
+  -- USR_006 Francois Noir — general_health, beginner, back injury (né 1988-09-17)
+  ('MET_009', '2025-01-01', '1988-09-17', 'Male',   182.00, 85.00, 25.66,  20.5, 74, 'general_health', 20, 'beginner',     4, FALSE, 2, 'back',     'moderate', 'none',        'USR_006'),
 
-  -- USR_007 Admin — muscle_gain, intermediate
-  ('MET_010', '2025-01-01', 45, 'Male',   160.00, 58.00, 22.66,  17.0, 62, 'muscle_gain',    16, 'intermediate', 2, TRUE,  4, 'none',     'none',     'none',        'USR_007'),
+  -- USR_007 Admin — muscle_gain, intermediate (né 1980-01-01)
+  ('MET_010', '2025-01-01', '1980-01-01', 'Male',   160.00, 58.00, 22.66,  17.0, 62, 'muscle_gain',    16, 'intermediate', 2, TRUE,  4, 'none',     'none',     'none',        'USR_007'),
 
-  -- USR_008 Hugo Bernard — endurance, intermediate
-  ('MET_011', '2026-01-01', 34, 'Male',   178.00, 82.30, 25.97,  21.0, 65, 'endurance',      12, 'intermediate', 3, TRUE,  4, 'none',     'none',     'none',        'USR_008'),
+  -- USR_008 Hugo Bernard — endurance, intermediate (né 1991-03-22)
+  ('MET_011', '2026-01-01', '1991-03-22', 'Male',   178.00, 82.30, 25.97,  21.0, 65, 'endurance',      12, 'intermediate', 3, TRUE,  4, 'none',     'none',     'none',        'USR_008'),
 
-  -- USR_009 Ines Garnier — general_health, beginner
-  ('MET_012', '2026-01-01', 31, 'Female', 166.00, 59.20, 21.49,  20.0, 70, 'general_health', 16, 'beginner',     2, FALSE, 3, 'none',     'none',     'none',        'USR_009'),
+  -- USR_009 Ines Garnier — general_health, beginner (née 1994-11-09)
+  ('MET_012', '2026-01-01', '1994-11-09', 'Female', 166.00, 59.20, 21.49,  20.0, 70, 'general_health', 16, 'beginner',     2, FALSE, 3, 'none',     'none',     'none',        'USR_009'),
 
-  -- USR_010 Julien Roche — muscle_gain, advanced, shoulder injury
-  ('MET_013', '2026-01-01', 38, 'Male',   184.00, 88.70, 26.19,  19.5, 63, 'muscle_gain',     8, 'advanced',     4, TRUE,  5, 'shoulder', 'mild',     'none',        'USR_010'),
+  -- USR_010 Julien Roche — muscle_gain, advanced, shoulder injury (né 1987-07-12)
+  ('MET_013', '2026-01-01', '1987-07-12', 'Male',   184.00, 88.70, 26.19,  19.5, 63, 'muscle_gain',     8, 'advanced',     4, TRUE,  5, 'shoulder', 'mild',     'none',        'USR_010'),
 
-  -- USR_011 Lea Faure — fat_loss, beginner
-  ('MET_014', '2026-01-01', 26, 'Female', 172.00, 64.40, 21.77,  23.0, 75, 'fat_loss',       20, 'beginner',     3, FALSE, 2, 'none',     'none',     'none',        'USR_011'),
+  -- USR_011 Lea Faure — fat_loss, beginner (née 1999-01-31)
+  ('MET_014', '2026-01-01', '1999-01-31', 'Female', 172.00, 64.40, 21.77,  23.0, 75, 'fat_loss',       20, 'beginner',     3, FALSE, 2, 'none',     'none',     'none',        'USR_011'),
 
-  -- USR_012 Marc Rey — general_health, intermediate, hypertension
-  ('MET_015', '2026-01-01', 42, 'Male',   175.00, 91.10, 29.76,  26.0, 80, 'general_health', 24, 'intermediate', 5, TRUE,  3, 'none',     'none',     'hypertension','USR_012'),
+  -- USR_012 Marc Rey — general_health, intermediate, hypertension (né 1983-09-03)
+  ('MET_015', '2026-01-01', '1983-09-03', 'Male',   175.00, 91.10, 29.76,  26.0, 80, 'general_health', 24, 'intermediate', 5, TRUE,  3, 'none',     'none',     'hypertension','USR_012'),
 
-  -- USR_013 Nina Laurent — general_health, beginner
-  ('MET_016', '2026-01-01', 32, 'Female', 169.00, 66.00, 23.13,  22.0, 69, 'general_health', 12, 'beginner',     2, FALSE, 2, 'none',     'none',     'none',        'USR_013'),
+  -- USR_013 Nina Laurent — general_health, beginner (née 1993-05-11)
+  ('MET_016', '2026-01-01', '1993-05-11', 'Female', 169.00, 66.00, 23.13,  22.0, 69, 'general_health', 12, 'beginner',     2, FALSE, 2, 'none',     'none',     'none',        'USR_013'),
 
-  -- USR_014 Omar Morel — endurance, advanced
-  ('MET_017', '2026-01-01', 39, 'Male',   180.00, 79.30, 24.48,  16.5, 58, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none',     'none',     'none',        'USR_014');
+  -- USR_014 Omar Morel — endurance, advanced (né 1986-10-27)
+  ('MET_017', '2026-01-01', '1986-10-27', 'Male',   180.00, 79.30, 24.48,  16.5, 58, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none',     'none',     'none',        'USR_014');
 
 -- Métriques dynamiques récentes (fenêtres analytiques)
 INSERT INTO user_metrics (
-  metric_id, recorded_at, age, gender, height_cm, weight_kg, bmi,
+  metric_id, recorded_at, birth_date, gender, height_cm, weight_kg, bmi,
   body_fat_percentage, resting_bpm, health_goal, target_timeline_weeks,
   fitness_level, fatigue_score, has_gym_access, workout_variety_preference,
   injury_type, injury_severity, medical_condition, user_id
 ) VALUES
-  ('MET_101', CURRENT_DATE - 1,  34, 'Female', 181.00, 77.60, 23.67, 17.9, 65, 'muscle_gain',    12, 'intermediate', 2, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
-  ('MET_102', CURRENT_DATE - 2,  39, 'Male',   165.00, 60.90, 22.37, 21.3, 68, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none', 'none', 'none', 'USR_002'),
-  ('MET_103', CURRENT_DATE - 3,  29, 'Female', 175.00, 93.50, 30.53, 27.0, 75, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
-  ('MET_104', CURRENT_DATE - 4,  26, 'Female', 168.00, 69.60, 24.66, 23.5, 70, 'general_health', 12, 'intermediate', 3, TRUE,  3, 'none', 'none', 'none', 'USR_005'),
-  ('MET_105', CURRENT_DATE - 8,  34, 'Female', 181.00, 77.80, 23.73, 18.0, 66, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
-  ('MET_106', CURRENT_DATE - 10, 29, 'Female', 175.00, 93.80, 30.63, 27.2, 76, 'fat_loss',       24, 'beginner',     4, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
-  ('MET_107', CURRENT_DATE - 36, 34, 'Female', 181.00, 78.40, 23.92, 18.4, 69, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
-  ('MET_108', CURRENT_DATE - 42, 39, 'Male',   165.00, 61.70, 22.66, 21.9, 72, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none', 'none', 'none', 'USR_002'),
-  ('MET_109', CURRENT_DATE - 50, 29, 'Female', 175.00, 95.00, 31.02, 27.9, 80, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
-  ('MET_110', CURRENT_DATE - 58, 32, 'Male',   170.00, 54.80, 18.96, 14.9, 63, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none', 'none', 'none', 'USR_004'),
-  ('MET_111', CURRENT_DATE -110, 34, 'Female', 181.00, 79.20, 24.15, 18.9, 72, 'muscle_gain',    12, 'intermediate', 4, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
-  ('MET_112', CURRENT_DATE -140, 26, 'Female', 168.00, 71.30, 25.26, 24.6, 75, 'general_health', 12, 'intermediate', 4, TRUE,  3, 'none', 'none', 'none', 'USR_005')
+  ('MET_101', CURRENT_DATE - 1,  '1990-04-15', 'Female', 181.00, 77.60, 23.67, 17.9, 65, 'muscle_gain',    12, 'intermediate', 2, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
+  ('MET_102', CURRENT_DATE - 2,  '1985-08-22', 'Male',   165.00, 60.90, 22.37, 21.3, 68, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none', 'none', 'none', 'USR_002'),
+  ('MET_103', CURRENT_DATE - 3,  '1995-12-05', 'Female', 175.00, 93.50, 30.53, 27.0, 75, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
+  ('MET_104', CURRENT_DATE - 4,  '1998-02-14', 'Female', 168.00, 69.60, 24.66, 23.5, 70, 'general_health', 12, 'intermediate', 3, TRUE,  3, 'none', 'none', 'none', 'USR_005'),
+  ('MET_105', CURRENT_DATE - 8,  '1990-04-15', 'Female', 181.00, 77.80, 23.73, 18.0, 66, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
+  ('MET_106', CURRENT_DATE - 10, '1995-12-05', 'Female', 175.00, 93.80, 30.63, 27.2, 76, 'fat_loss',       24, 'beginner',     4, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
+  ('MET_107', CURRENT_DATE - 36, '1990-04-15', 'Female', 181.00, 78.40, 23.92, 18.4, 69, 'muscle_gain',    12, 'intermediate', 3, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
+  ('MET_108', CURRENT_DATE - 42, '1985-08-22', 'Male',   165.00, 61.70, 22.66, 21.9, 72, 'fat_loss',       16, 'beginner',     3, FALSE, 2, 'none', 'none', 'none', 'USR_002'),
+  ('MET_109', CURRENT_DATE - 50, '1995-12-05', 'Female', 175.00, 95.00, 31.02, 27.9, 80, 'fat_loss',       24, 'beginner',     5, TRUE,  3, 'knee', 'mild', 'none', 'USR_003'),
+  ('MET_110', CURRENT_DATE - 58, '1992-06-30', 'Male',   170.00, 54.80, 18.96, 14.9, 63, 'endurance',       8, 'advanced',     1, TRUE,  5, 'none', 'none', 'none', 'USR_004'),
+  ('MET_111', CURRENT_DATE -110, '1990-04-15', 'Female', 181.00, 79.20, 24.15, 18.9, 72, 'muscle_gain',    12, 'intermediate', 4, TRUE,  4, 'none', 'none', 'none', 'USR_001'),
+  ('MET_112', CURRENT_DATE -140, '1998-02-14', 'Female', 168.00, 71.30, 25.26, 24.6, 75, 'general_health', 12, 'intermediate', 4, TRUE,  3, 'none', 'none', 'none', 'USR_005')
 ON CONFLICT (metric_id) DO UPDATE SET
   recorded_at              = EXCLUDED.recorded_at,
-  age                      = EXCLUDED.age,
+  birth_date               = EXCLUDED.birth_date,
   gender                   = EXCLUDED.gender,
   height_cm                = EXCLUDED.height_cm,
   weight_kg                = EXCLUDED.weight_kg,
@@ -859,6 +865,44 @@ ON CONFLICT (anomaly_id) DO UPDATE SET
   resolution_action = EXCLUDED.resolution_action,
   check_id          = EXCLUDED.check_id,
   execution_id      = EXCLUDED.execution_id;
+
+-- ============================================================
+-- ai_recommendation
+-- Traces des recommandations générées par l'IA (liées aux documents MongoDB)
+-- recommendation_type : 'meal_plan' | 'meal_analysis' | 'workout'
+-- status             : 'pending' | 'delivered' | 'rejected'
+-- ============================================================
+INSERT INTO ai_recommendation (
+  recommendation_id, mongodb_document_id, mongodb_collection,
+  recommendation_type, confidence_score, status, created_at
+) VALUES
+  ('AIREC_001', 'mongo_doc_001', 'meal_analyses',  'meal_analysis', 0.92, 'delivered', '2026-03-14 08:05:00'),
+  ('AIREC_002', 'mongo_doc_002', 'meal_plans',     'meal_plan',     0.87, 'delivered', '2026-03-14 12:10:00'),
+  ('AIREC_003', 'mongo_doc_003', 'meal_analyses',  'meal_analysis', 0.78, 'delivered', '2026-03-15 07:55:00'),
+  ('AIREC_004', 'mongo_doc_004', 'meal_plans',     'meal_plan',     0.83, 'delivered', '2026-03-15 13:00:00'),
+  ('AIREC_005', 'mongo_doc_005', 'meal_analyses',  'meal_analysis', 0.91, 'delivered', '2026-03-16 08:20:00'),
+  ('AIREC_006', 'mongo_doc_006', 'meal_plans',     'meal_plan',     0.75, 'pending',   '2026-03-21 09:00:00'),
+  ('AIREC_007', 'mongo_doc_007', 'meal_analyses',  'meal_analysis', 0.64, 'rejected',  '2026-03-18 19:30:00'),
+  ('AIREC_008', 'mongo_doc_008', 'meal_plans',     'meal_plan',     0.89, 'delivered', '2026-03-20 11:45:00'),
+  ('AIREC_009', 'mongo_doc_009', 'meal_analyses',  'meal_analysis', 0.95, 'delivered', '2026-03-21 08:10:00'),
+  ('AIREC_010', 'mongo_doc_010', 'meal_plans',     'meal_plan',     0.82, 'delivered', '2026-03-22 07:50:00');
+
+-- ============================================================
+-- user_ia_recommendation
+-- Table de liaison user_ ↔ ai_recommendation
+-- Permet de retrouver l'historique IA d'un utilisateur
+-- ============================================================
+INSERT INTO user_ia_recommendation (user_id, recommendation_id) VALUES
+  ('USR_001', 'AIREC_001'),   -- Alice  → analyse repas
+  ('USR_001', 'AIREC_002'),   -- Alice  → plan de repas
+  ('USR_001', 'AIREC_009'),   -- Alice  → analyse repas (récent)
+  ('USR_002', 'AIREC_003'),   -- Bob    → analyse repas
+  ('USR_002', 'AIREC_004'),   -- Bob    → plan de repas
+  ('USR_003', 'AIREC_005'),   -- Claire → analyse repas
+  ('USR_003', 'AIREC_006'),   -- Claire → plan de repas (en attente)
+  ('USR_004', 'AIREC_007'),   -- David  → analyse rejetée (confiance < 0.70)
+  ('USR_005', 'AIREC_008'),   -- Emma   → plan de repas
+  ('USR_008', 'AIREC_010');   -- Hugo   → plan de repas
 
 -- ============================================================
 -- Refresh statistiques planificateur
