@@ -35,23 +35,18 @@ INSERT INTO ingredient (
   protein_g,
   carbs_g,
   usda_name,
-  price_per_kg,
-  is_vegetarian,
-  is_vegan,
-  is_gluten_free,
-  is_dairy_free
+  price_per_kg
 ) VALUES
---                                                                                                                                                          vege   vegan  gluten dairy_free
-  ('ING_001', 'Chicken',      'MEAT',      'A', 1.65,  0.36,  0.0,  0.0, 74.0, 85.0, 31.0,  0.0, 'Chicken, broilers or fryers, breast, meat only, cooked, roasted',  9.50, FALSE, FALSE, TRUE,  TRUE ),
-  ('ING_002', 'Broccoli',     'VEGETABLE', 'A', 0.34,  0.04,  2.6,  0.7, 33.0,  0.0,  2.8,  7.0, 'Broccoli, cooked, boiled, drained, without salt',                  2.80, TRUE,  TRUE,  TRUE,  TRUE ),
-  ('ING_003', 'Brown rice',   'GRAIN',     'B', 1.11,  0.09,  1.8,  0.4,  5.0,  0.0,  2.6, 23.0, 'Rice, brown, long-grain, cooked',                                  2.50, TRUE,  TRUE,  TRUE,  TRUE ),
-  ('ING_004', 'Whole milk',   'DAIRY',     'C', 0.61,  0.33,  0.0,  4.8, 44.0, 10.0,  3.2,  4.8, 'Milk, whole, 3.25% milkfat, with added vitamin D',                 1.20, TRUE,  FALSE, TRUE,  FALSE),
-  ('ING_005', 'Banana',       'FRUIT',     'A', 0.89,  0.03,  2.6, 12.2,  1.0,  0.0,  1.1, 23.0, 'Bananas, raw',                                                      1.80, TRUE,  TRUE,  TRUE,  TRUE ),
-  ('ING_006', 'Salmon',       'MEAT',      'A', 2.08,  1.30,  0.0,  0.0, 59.0, 63.0, 20.0,  0.0, 'Fish, salmon, Atlantic, farmed, cooked, dry heat',                 18.00, FALSE, FALSE, TRUE,  TRUE ),
-  ('ING_007', 'Olive oil',    'OTHER',     'D', 8.84, 10.00,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, 'Oil, olive, salad or cooking',                                      8.50, TRUE,  TRUE,  TRUE,  TRUE ),
-  ('ING_008', 'Oats',         'GRAIN',     'A', 3.89,  0.67, 10.6,  0.0,  2.0,  0.0, 16.9, 66.0, 'Oats',                                                              2.00, TRUE,  TRUE,  FALSE, TRUE ),
-  ('ING_009', 'Greek yogurt', 'DAIRY',     'A', 0.59,  0.04,  0.0,  3.2, 36.0,  5.0, 10.0,  3.6, 'Yogurt, Greek, plain, whole milk',                                  4.50, TRUE,  FALSE, TRUE,  FALSE),
-  ('ING_010', 'Spinach',      'VEGETABLE', 'A', 0.23,  0.04,  2.2,  0.4, 79.0,  0.0,  2.9,  3.6, 'Spinach, raw',                                                      3.20, TRUE,  TRUE,  TRUE,  TRUE );
+  ('ING_001', 'Chicken',      'MEAT',      'A', 1.65,  0.36,  0.0,  0.0, 74.0, 85.0, 31.0,  0.0, 'Chicken, broilers or fryers, breast, meat only, cooked, roasted',    9.50),
+  ('ING_002', 'Broccoli',     'VEGETABLE', 'A', 0.34,  0.04,  2.6,  0.7, 33.0,  0.0,  2.8,  7.0, 'Broccoli, cooked, boiled, drained, without salt',                    2.80),
+  ('ING_003', 'Brown rice',   'GRAIN',     'B', 1.11,  0.09,  1.8,  0.4,  5.0,  0.0,  2.6, 23.0, 'Rice, brown, long-grain, cooked',                                    2.50),
+  ('ING_004', 'Whole milk',   'DAIRY',     'C', 0.61,  0.33,  0.0,  4.8, 44.0, 10.0,  3.2,  4.8, 'Milk, whole, 3.25% milkfat, with added vitamin D',                   1.20),
+  ('ING_005', 'Banana',       'FRUIT',     'A', 0.89,  0.03,  2.6, 12.2,  1.0,  0.0,  1.1, 23.0, 'Bananas, raw',                                                        1.80),
+  ('ING_006', 'Salmon',       'MEAT',      'A', 2.08,  1.30,  0.0,  0.0, 59.0, 63.0, 20.0,  0.0, 'Fish, salmon, Atlantic, farmed, cooked, dry heat',                   18.00),
+  ('ING_007', 'Olive oil',    'OTHER',     'D', 8.84, 10.00,  0.0,  0.0,  0.0,  0.0,  0.0,  0.0, 'Oil, olive, salad or cooking',                                        8.50),
+  ('ING_008', 'Oats',         'GRAIN',     'A', 3.89,  0.67, 10.6,  0.0,  2.0,  0.0, 16.9, 66.0, 'Oats',                                                                2.00),
+  ('ING_009', 'Greek yogurt', 'DAIRY',     'A', 0.59,  0.04,  0.0,  3.2, 36.0,  5.0, 10.0,  3.6, 'Yogurt, Greek, plain, whole milk',                                    4.50),
+  ('ING_010', 'Spinach',      'VEGETABLE', 'A', 0.23,  0.04,  2.2,  0.4, 79.0,  0.0,  2.9,  3.6, 'Spinach, raw',                                                        3.20);
 
 -- ============================================================
 -- recipe

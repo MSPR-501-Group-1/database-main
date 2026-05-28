@@ -89,10 +89,6 @@ CREATE TABLE ingredient(
    carbs_g DECIMAL(5,2),
    usda_name VARCHAR(200),
    price_per_kg DECIMAL(10,5),
-   is_vegetarian  BOOLEAN DEFAULT FALSE,
-   is_vegan       BOOLEAN DEFAULT FALSE,
-   is_gluten_free BOOLEAN DEFAULT FALSE,
-   is_dairy_free  BOOLEAN DEFAULT FALSE,
    PRIMARY KEY(ingredient_id)
 );
 
