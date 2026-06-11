@@ -1,4 +1,5 @@
 -- SCRIPT PostreSQL pour la DB
+-- v14 : ajout display_name + avatar_url sur user_ ; ajout table social_post
 
 -- Pour le hachage ---------------------------------------
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -65,6 +66,7 @@ CREATE TYPE health_goal_enum AS ENUM (
    'fat_loss', 'muscle_gain', 'general_health', 'endurance'
 );
 
+-- ENUM ajouté en v14 pour les médias sociaux
 CREATE TYPE social_media_type_enum AS ENUM (
    'image', 'video'
 );
@@ -195,6 +197,7 @@ CREATE TABLE model_performance(
    FOREIGN KEY(model_id) REFERENCES ai_model_registry(model_id)
 );
 
+-- v14 : ajout de display_name et avatar_url pour le profil social
 CREATE TABLE user_(
    user_id VARCHAR(255) DEFAULT gen_random_uuid(),
    email VARCHAR(320) UNIQUE NOT NULL,
