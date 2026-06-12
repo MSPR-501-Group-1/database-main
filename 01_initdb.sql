@@ -400,13 +400,21 @@ CREATE TABLE user_ia_recommendation(
 );
 
 CREATE TABLE social_post(
-   post_id       VARCHAR(255) DEFAULT gen_random_uuid(),
-   user_id       VARCHAR(255) NOT NULL,
-   text          TEXT,
+   post_id    VARCHAR(255) DEFAULT gen_random_uuid(),
+   user_id    VARCHAR(255) NOT NULL,
+   text       TEXT,
+   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   PRIMARY KEY(post_id),
+   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
+);
+
+CREATE TABLE social_post_media(
+   media_id      VARCHAR(255) DEFAULT gen_random_uuid(),
+   post_id       VARCHAR(255) NOT NULL,
    media_url     TEXT,
    media_type    social_media_type_enum,
    thumbnail_url TEXT,
    created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-   PRIMARY KEY(post_id),
-   FOREIGN KEY(user_id) REFERENCES user_(user_id) ON DELETE CASCADE
+   PRIMARY KEY(media_id),
+   FOREIGN KEY(post_id) REFERENCES social_post(post_id) ON DELETE CASCADE
 );
