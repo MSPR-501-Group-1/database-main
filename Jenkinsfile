@@ -37,13 +37,16 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '''
-                        sonar-scanner \
-                            -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
-                            -Dsonar.sources=. \
-                            -Dsonar.inclusions="**/*.sql" \
-                            -Dsonar.exclusions="**/.git/**"
-                    '''
+                    script {
+                        def scannerHome = tool 'SonarQube Scanner'
+                        sh """
+                            ${scannerHome}/bin/sonar-scanner \
+                                -Dsonar.projectKey=${SONAR_PROJECT_KEY} \
+                                -Dsonar.sources=. \
+                                -Dsonar.inclusions="**/*.sql" \
+                                -Dsonar.exclusions="**/.git/**"
+                        """
+                    }
                 }
             }
         }
